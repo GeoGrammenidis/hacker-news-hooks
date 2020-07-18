@@ -70,8 +70,13 @@ export default function useWrapper(dataMap=[], onlyStories=false, limit=50, incr
         _isMounted.current=true;
         if(state.dataToFetch.length>0 && state.data.length<limit){
             fetchData(state.dataToFetch)
-                .then(data=> _isMounted.current&&dispatch({type:"success", data, onlyStories}))
-                .catch(error=> _isMounted.current&&dispatch({type:"error", error}))
+                .then(data=>{
+                    const { error } = data;
+                    error
+                        ? _isMounted.current&&dispatch({type:"error", error:`Error: ${error}`})
+                        :_isMounted.current&&dispatch({type:"success", data, onlyStories})
+                })
+                .catch((error)=>_isMounted.current&&dispatch({type:"error", error:error.toString()}))
         }else{
             _isMounted.current&&dispatch({type:"end"})
         }

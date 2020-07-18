@@ -6,14 +6,14 @@ function postsReducer(state, action){
     switch (action.type) {
         case "success":
             return {
-                postsMap:action.postMap,
+                postsMap: action.postMap,
                 error: null,
                 loading: false
             }
         case "error":
             return {
                 ...state,
-                error:action.error,
+                error: action.error,
                 loading: false
             }
         default:
@@ -32,20 +32,28 @@ export default function Posts({getMap, history, location, match}) {
 
     React.useEffect(() => {
         _isMounted.current = true
-        getMap().then(postMap=>_isMounted.current&&dispatch({type:"success", postMap}))
-            .catch(error=>_isMounted.current&&dispatch({type:"error", error}))
+        getMap().then(postMap=>{
+                const { error } = postMap;
+                error
+                    ? _isMounted.current&&dispatch({type:"error", error:`Error: ${error}`})
+                    : _isMounted.current&&dispatch({type:"success", postMap})
+            })
+            .catch((error)=>_isMounted.current&&dispatch({type:"error", error:error.toString()}))
         return () => _isMounted.current = false
-    }, [])
+    },[])
 
     const {loading, data, error} = useWrapper(state.postsMap, location.pathname==="/user")
     return (
-        <DataDisplay 
-                data={data}
-                error={error}
-                loading={loading}
-                history={history}
-                location={location}
-                match={match}
-            />
+        <>
+            {state.error&&<div className="error">{state.error}</div>}
+            <DataDisplay 
+                    data={data}
+                    error={error}
+                    loading={loading}
+                    history={history}
+                    location={location}
+                    match={match}
+                />
+        </>
     )
 }

@@ -37,15 +37,20 @@ export default function User({ history, location, match }) {
     React.useEffect(()=>{
         _isMounted.current=true;
         fetchUser(queryString.parse(location.search).id)
-        .then(user => _isMounted.current&&dispatch({type:"success", user}))
-        .catch(({message}) => _isMounted.current&&dispatch({type:"error", error:message}))
+            .then(user =>{
+                const { error } = user;
+                error
+                    ? _isMounted.current&&dispatch({type:"error", error:`Error: ${error}`})
+                    : _isMounted.current&&dispatch({type:"success", user})
+            })
+            .catch((error)=>_isMounted.current&&dispatch({type:"error", error:error.toString()}))
         return ()=>_isMounted.current=true;
     },[])
     const {user, loading, error} = state;
     return (
         <>
         {loading&&<Loading/>}
-        {error&&<div>{error}</div>}
+        {error&&<div className="error">{error}</div>}
         {user&&<>
             <h1 className="header">{user.id}</h1>
             <div>

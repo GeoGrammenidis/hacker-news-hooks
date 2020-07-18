@@ -109,3 +109,9 @@ li {
   margin: 10px 0;
   border-radius: 5px;
 }
+
+.error {
+  font-weight: bold;
+  text-align: center;
+  color: red;
+}

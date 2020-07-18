@@ -35,15 +35,20 @@ export default function Post({ history, location, match }) {
     React.useEffect(()=>{
         _isMounted.current = true
         fetchItem(queryString.parse(location.search).id)
-            .then(post=>_isMounted.current&&dispatch({type:"success", post}))
-            .catch(error=>_isMounted.current&&dispatch({type:"error", error}))
+            .then(post=>{
+                const { error } = post;
+                error
+                    ? _isMounted.current&&dispatch({type:"error", error:`Error: ${error}`})
+                    : _isMounted.current&&dispatch({type:"success", post})
+            })
+            .catch((error)=>_isMounted.current&&dispatch({type:"error", error:error.toString()}))
         return ()=> _isMounted.current=false
     },[])
     const {loading, error, post} = state;
     return (
         <>
             {loading&&<Loading/>}
-            {error&&<div>{error}</div>}
+            {error&&<div className="error">{error}</div>}
             {post&&<>
                 <h1 className="header">
                     <a className="link" href={post.url}>{post.title}</a>
