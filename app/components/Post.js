@@ -31,8 +31,9 @@ export default function Post({ history, location, match }) {
         loading: true,
     }
     const [state, dispatch] = React.useReducer(postReducer, initialState)
-    const _isMounted = React.useRef(true)
+    const _isMounted = React.useRef(null)
     React.useEffect(()=>{
+        _isMounted.current = true
         fetchItem(queryString.parse(location.search).id)
             .then(post=>_isMounted.current&&dispatch({type:"success", post}))
             .catch(error=>_isMounted.current&&dispatch({type:"error", error}))

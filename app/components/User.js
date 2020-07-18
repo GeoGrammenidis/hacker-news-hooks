@@ -33,8 +33,9 @@ export default function User({ history, location, match }) {
     }
     const [state, dispatch] = React.useReducer(userReducer, initialState)
     const theme = React.useContext(ThemeContext)
-    const _isMounted = React.useRef(true)
+    const _isMounted = React.useRef(null)
     React.useEffect(()=>{
+        _isMounted.current=true;
         fetchUser(queryString.parse(location.search).id)
         .then(user => _isMounted.current&&dispatch({type:"success", user}))
         .catch(({message}) => _isMounted.current&&dispatch({type:"error", error:message}))

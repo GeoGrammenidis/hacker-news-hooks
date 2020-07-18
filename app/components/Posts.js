@@ -28,12 +28,13 @@ export default function Posts({getMap, history, location, match}) {
         loading: true
     }
     const [state, dispatch] = React.useReducer(postsReducer, initialState)
-    const _isMounted = React.useRef(true)
+    const _isMounted = React.useRef(null)
 
     React.useEffect(() => {
+        _isMounted.current = true
         getMap().then(postMap=>_isMounted.current&&dispatch({type:"success", postMap}))
             .catch(error=>_isMounted.current&&dispatch({type:"error", error}))
-        return () => _isMounted.current=false
+        return () => _isMounted.current = false
     }, [])
 
     const {loading, data, error} = useWrapper(state.postsMap, location.pathname==="/user")
